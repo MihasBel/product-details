@@ -7,11 +7,12 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-//Id     primitive.ObjectID `json:"id" bson:"_id"`
-
+// Id     primitive.ObjectID `json:"id" bson:"_id"`
+// TODO implement map[string]map[string]string insted of [][]string
 type Details struct {
-	Id   primitive.ObjectID `json:"id" bson:"_id"`
-	Name string             `json:"name" bson:"name"`
+	Id          primitive.ObjectID `json:"id" bson:"_id"`
+	ProductName string             `json:"product-name" bson:"product-name"`
+	Group       [][]string         `json:"group" bson:"group"`
 }
 
 func AllDetails() ([]Details, error) {
@@ -33,4 +34,13 @@ func AllDetails() ([]Details, error) {
 		return nil, err
 	}
 	return details, nil
+}
+func DetailsById(id primitive.ObjectID) (Details, error) {
+	d := Details{}
+	res := config.DetailsCollection.FindOne(context.Background(), bson.D{{"_id", id}})
+	err := res.Decode(&d)
+	if err != nil {
+		return d, err
+	}
+	return d, nil
 }
