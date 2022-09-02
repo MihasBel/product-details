@@ -1,7 +1,7 @@
 package main
 
 import (
-	"details/handlers"
+	"details/details"
 	"fmt"
 	"github.com/julienschmidt/httprouter"
 	"log"
@@ -15,8 +15,9 @@ func main() {
 	defer logf.Close()
 	router := httprouter.New()
 	router.GET("/", index)
-	router.GET("/all", handlers.GetAll)
-	router.GET("/details/:id", handlers.Get)
+	router.GET("/details/all", details.GetAll)
+	router.GET("/details/one/:id", details.Get)
+	router.POST("/details/create", details.Create)
 	http.ListenAndServe(":8080", router)
 }
 func index(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {

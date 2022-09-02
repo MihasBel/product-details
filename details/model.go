@@ -1,4 +1,4 @@
-package models
+package details
 
 import (
 	"context"
@@ -41,6 +41,14 @@ func DetailsById(id primitive.ObjectID) (Details, error) {
 	err := res.Decode(&d)
 	if err != nil {
 		return d, err
+	}
+	return d, nil
+}
+func InsertOne(d Details) (Details, error) {
+	d.Id = primitive.NewObjectID()
+	_, err := config.DetailsCollection.InsertOne(context.Background(), d)
+	if err != nil {
+		return Details{}, err
 	}
 	return d, nil
 }

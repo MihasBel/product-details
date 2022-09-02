@@ -1,7 +1,6 @@
-package handlers
+package details
 
 import (
-	"details/models"
 	"encoding/json"
 	"fmt"
 	"github.com/julienschmidt/httprouter"
@@ -12,7 +11,7 @@ import (
 
 func GetAll(w http.ResponseWriter, _ *http.Request, _ httprouter.Params) {
 
-	ds, err := models.AllDetails()
+	ds, err := AllDetails()
 	if err != nil {
 		log.Println(err)
 	}
@@ -35,7 +34,7 @@ func Get(w http.ResponseWriter, _ *http.Request, params httprouter.Params) {
 	if err != nil {
 		log.Println(err)
 	}
-	d, err := models.DetailsById(id)
+	d, err := DetailsById(id)
 	if err != nil {
 		log.Println(err)
 	}
@@ -45,5 +44,26 @@ func Get(w http.ResponseWriter, _ *http.Request, params httprouter.Params) {
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
+	fmt.Fprint(w, string(dj))
+}
+
+func Create(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+	d := Details{}
+	err := json.NewDecoder(r.Body).Decode(&d)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	d, err = InsertOne(d)
+	if err != nil {
+		log.Println(err)
+	}
+	dj, err := json.Marshal(d)
+	if err != nil {
+		log.Println(dj)
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated)
 	fmt.Fprint(w, string(dj))
 }
