@@ -10,11 +10,11 @@ import (
 
 var DetailsCollection *mongo.Collection
 
-func init() {
+func InitDetailsCollection() {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 	defer cancel()
-	client, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb://localhost:27017"))
+	client, err := mongo.Connect(ctx, options.Client().ApplyURI(Config.ConnectionString))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -22,6 +22,6 @@ func init() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	DetailsCollection = client.Database("product-details").Collection("details")
+	DetailsCollection = client.Database(Config.Database).Collection(Config.Collection)
 
 }

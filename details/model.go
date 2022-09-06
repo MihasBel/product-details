@@ -14,6 +14,10 @@ type Details struct {
 	ProductName string             `json:"product-name" bson:"product-name"`
 	Group       [][]string         `json:"group" bson:"group"`
 }
+type DetailsWithoutId struct {
+	ProductName string     `json:"product-name" bson:"product-name"`
+	Group       [][]string `json:"group" bson:"group"`
+}
 
 func AllDetails() ([]Details, error) {
 	var details []Details
