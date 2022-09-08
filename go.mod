@@ -1,4 +1,4 @@
-module details
+module github.com/MihasBel/product-details
 
 go 1.19
 

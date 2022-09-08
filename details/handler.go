@@ -1,9 +1,9 @@
 package details
 
 import (
-	"details/config"
 	"encoding/json"
 	"fmt"
+	"github.com/MihasBel/product-details/config"
 	"github.com/julienschmidt/httprouter"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"log"
@@ -56,7 +56,7 @@ func Get(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	if err != nil {
 		log.Println(err)
 	}
-	d, err := DetailsById(id)
+	d, err := GetById(id)
 	if err != nil {
 		log.Println(err)
 	}

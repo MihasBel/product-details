@@ -2,7 +2,7 @@ package details
 
 import (
 	"context"
-	"details/config"
+	"github.com/MihasBel/product-details/config"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -39,7 +39,7 @@ func AllDetails() ([]Details, error) {
 	}
 	return details, nil
 }
-func DetailsById(id primitive.ObjectID) (Details, error) {
+func GetById(id primitive.ObjectID) (Details, error) {
 	d := Details{}
 	res := config.DetailsCollection.FindOne(context.Background(), bson.D{{"_id", id}})
 	err := res.Decode(&d)
