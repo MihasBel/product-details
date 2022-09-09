@@ -16,7 +16,7 @@ var logf *os.File
 func init() {
 	logf = logFile()
 	log.SetOutput(logf)
-	config.Config = config.GetConfig("dev")
+	config.Config = config.GetConfig()
 	config.InitDetailsCollection()
 }
 

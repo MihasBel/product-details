@@ -15,19 +15,9 @@ type Configuration struct {
 	ApiKey           string
 }
 
-func GetConfig(env string) Configuration {
-	var fname string
+func GetConfig() Configuration {
 	config := Configuration{}
-	switch env {
-	case "prod":
-		fname = "prod-env.json"
-		return config
-	case "dev":
-		fname = "dev-env.json"
-	default:
-		log.Fatal("unexpected environment name")
-	}
-	file, err := os.Open("config/" + fname)
+	file, err := os.Open("env.json")
 	if err != nil {
 		log.Println(err)
 	}
