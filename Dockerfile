@@ -1,7 +1,8 @@
 # syntax=docker/dockerfile:1
 
-FROM golang:latest
-WORKDIR /app
+## Build
+FROM golang:alpine AS builder
+WORKDIR /build
 
 COPY go.mod ./
 COPY go.sum ./
@@ -11,13 +12,25 @@ RUN mkdir -p ./details
 COPY details/* ./details
 RUN mkdir -p ./docs
 COPY docs/* ./docs
-COPY local-docker-env/env.json ./
+
 COPY main.go ./
 
 RUN go mod download
 
 RUN go build -o /product-details
 
+## Deploy
+FROM alpine:latest
+
+WORKDIR /
+
+
+COPY --from=builder /product-details /product-details
+COPY local-docker-env/env.json ./
+
 EXPOSE 8080
 
-CMD ["/product-details"]
+
+
+ENTRYPOINT ["/product-details"]
+
