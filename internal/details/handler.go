@@ -3,10 +3,10 @@ package details
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/MihasBel/product-details/config"
+	"github.com/MihasBel/product-details/pkg/apikey"
 	"github.com/julienschmidt/httprouter"
+	"github.com/rs/zerolog/log"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"log"
 	"net/http"
 )
 
@@ -17,17 +17,17 @@ import (
 // @Router /details/all [get]
 // @Security ApiKeyAuth
 func GetAll(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-	if !config.IsAuthorizedByApikey(w, r) {
+	if !apikey.IsAuthorizedByApikey(w, r) {
 		http.Error(w, http.StatusText(401), http.StatusUnauthorized)
 		return
 	}
 	ds, err := AllDetails()
 	if err != nil {
-		log.Println(err)
+		log.Error().Err(err).Msg("error while get all details from db")
 	}
 	dsj, err := json.Marshal(ds)
 	if err != nil {
-		log.Println(err)
+		log.Error().Err(err).Msg("error while marshal all details")
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
@@ -43,7 +43,7 @@ func GetAll(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 // @Router /details/one/{id} [get]
 // @Security ApiKeyAuth
 func Get(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
-	if !config.IsAuthorizedByApikey(w, r) {
+	if !apikey.IsAuthorizedByApikey(w, r) {
 		http.Error(w, http.StatusText(401), http.StatusUnauthorized)
 		return
 	}
@@ -54,15 +54,15 @@ func Get(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	}
 	id, err := primitive.ObjectIDFromHex(ids)
 	if err != nil {
-		log.Println(err)
+		log.Error().Err(err).Msg("error while reading details id")
 	}
 	d, err := GetById(id)
 	if err != nil {
-		log.Println(err)
+		log.Error().Err(err).Msg("error while getting one details by id")
 	}
 	dj, err := json.Marshal(d)
 	if err != nil {
-		log.Println(err)
+		log.Error().Err(err).Msg("error while marshal one details")
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
@@ -72,29 +72,29 @@ func Get(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 // Create godoc
 // @Summary Creates a new product-details from the received json document
 // @Accept json
-// @Param request body DetailsWithoutId true "product-details schema"
+// @Param request body _withoutId true "product-details schema"
 // @Success 200 {object} Details
 // @Router /details/create [post]
 // @Security ApiKeyAuth
 func Create(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-	if !config.IsAuthorizedByApikey(w, r) {
+	if !apikey.IsAuthorizedByApikey(w, r) {
 		http.Error(w, http.StatusText(401), http.StatusUnauthorized)
 		return
 	}
 	d := Details{}
 	err := json.NewDecoder(r.Body).Decode(&d)
 	if err != nil {
-		log.Println(err)
+		log.Error().Err(err).Msg("error while decode details")
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 	d, err = InsertOne(d)
 	if err != nil {
-		log.Println(err)
+		log.Error().Err(err).Msg("error while insert one details to db")
 	}
 	dj, err := json.Marshal(d)
 	if err != nil {
-		log.Println(dj)
+		log.Error().Err(err).Msg("error while marshal inserted one details")
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)

@@ -9,9 +9,9 @@ COPY go.sum ./
 RUN mkdir -p ./config
 COPY config/* ./config
 RUN mkdir -p ./details
-COPY details/* ./details
+COPY internal/details/* ./details
 RUN mkdir -p ./docs
-COPY docs/* ./docs
+COPY api/docs/* ./docs
 
 COPY main.go ./
 
@@ -25,8 +25,8 @@ FROM alpine:latest
 WORKDIR /
 
 
-COPY --from=builder /product-details /product-details
-COPY local-docker-env/env.json ./
+COPY --from=builder /bin/app/product-details /product-details
+COPY configs/local-docker-env/env.json ./
 
 EXPOSE 8080
 

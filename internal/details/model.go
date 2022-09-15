@@ -2,10 +2,18 @@ package details
 
 import (
 	"context"
-	"github.com/MihasBel/product-details/config"
+	"github.com/MihasBel/product-details/internal/app"
+	"github.com/MihasBel/product-details/pkg/mongoDb"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 )
+
+var collection *mongo.Collection
+
+func InitCollection() {
+	collection = mongoDb.DB.Collection(app.Config.Collection)
+}
 
 // Id     primitive.ObjectID `json:"id" bson:"_id"`
 // TODO implement map[string]map[string]string insted of [][]string
@@ -14,14 +22,14 @@ type Details struct {
 	ProductName string             `json:"product-name" bson:"product-name"`
 	Group       [][]string         `json:"group" bson:"group"`
 }
-type DetailsWithoutId struct {
+type _withoutId struct {
 	ProductName string     `json:"product-name" bson:"product-name"`
 	Group       [][]string `json:"group" bson:"group"`
 }
 
 func AllDetails() ([]Details, error) {
 	var details []Details
-	cur, err := config.DetailsCollection.Find(context.Background(), bson.D{})
+	cur, err := collection.Find(context.Background(), bson.D{})
 	if err != nil {
 		return nil, err
 	}
@@ -41,7 +49,7 @@ func AllDetails() ([]Details, error) {
 }
 func GetById(id primitive.ObjectID) (Details, error) {
 	d := Details{}
-	res := config.DetailsCollection.FindOne(context.Background(), bson.D{{"_id", id}})
+	res := collection.FindOne(context.Background(), bson.D{{"_id", id}})
 	err := res.Decode(&d)
 	if err != nil {
 		return d, err
@@ -50,7 +58,7 @@ func GetById(id primitive.ObjectID) (Details, error) {
 }
 func InsertOne(d Details) (Details, error) {
 	d.Id = primitive.NewObjectID()
-	_, err := config.DetailsCollection.InsertOne(context.Background(), d)
+	_, err := collection.InsertOne(context.Background(), d)
 	if err != nil {
 		return Details{}, err
 	}

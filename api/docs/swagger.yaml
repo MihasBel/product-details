@@ -1,0 +1,38 @@
+definitions:
+  details.Details:
+    properties:
+      group:
+        items:
+          items:
+            type: string
+          type: array
+        type: array
+      id:
+        type: string
+      product-name:
+        type: string
+    type: object
+  details.DetailsWithoutId:
+    properties:
+      group:
+        items:
+          items:
+            type: string
+          type: array
+        type: array
+      product-name:
+        type: string
+    type: object
+info:
+  contact: {}
+  description: Swagger API service to store and modify the product details description
+    of any goods
+  title: Details API
+  version: "1.0"
+paths: {}
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
