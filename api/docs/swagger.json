@@ -6,6 +6,7 @@
         "contact": {},
         "version": "1.0"
     },
+    "basePath": "/api/v1",
     "paths": {
         "/details/all": {
             "get": {
@@ -49,7 +50,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/details.DetailsWithoutId"
+                            "$ref": "#/definitions/details._withoutId"
                         }
                     }
                 ],
@@ -115,7 +116,7 @@
                 }
             }
         },
-        "details.DetailsWithoutId": {
+        "details._withoutId": {
             "type": "object",
             "properties": {
                 "group": {
