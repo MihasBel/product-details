@@ -1,4 +1,16 @@
+basePath: /api/v1
 definitions:
+  details._withoutId:
+    properties:
+      group:
+        items:
+          items:
+            type: string
+          type: array
+        type: array
+      product-name:
+        type: string
+    type: object
   details.Details:
     properties:
       group:
@@ -12,24 +24,64 @@ definitions:
       product-name:
         type: string
     type: object
-  details.DetailsWithoutId:
-    properties:
-      group:
-        items:
-          items:
-            type: string
-          type: array
-        type: array
-      product-name:
-        type: string
-    type: object
 info:
   contact: {}
   description: Swagger API service to store and modify the product details description
     of any goods
   title: Details API
   version: "1.0"
-paths: {}
+paths:
+  /details/all:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/details.Details'
+            type: array
+      security:
+      - ApiKeyAuth: []
+      summary: Retrieves all product details
+  /details/create:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: product-details schema
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/details._withoutId'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/details.Details'
+      security:
+      - ApiKeyAuth: []
+      summary: Creates a new product-details from the received json document
+  /details/one/{id}:
+    get:
+      parameters:
+      - description: product details ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/details.Details'
+      security:
+      - ApiKeyAuth: []
+      summary: Retrieves product-details on given ID
 securityDefinitions:
   ApiKeyAuth:
     in: header

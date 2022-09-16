@@ -2,13 +2,13 @@ package apikey
 
 import (
 	"github.com/MihasBel/product-details/internal/app"
-	"net/http"
+	"github.com/gofiber/fiber/v2"
 )
 
-func IsAuthorizedByApikey(_ http.ResponseWriter, r *http.Request) bool {
-	auth := r.Header.Get("Authorization")
+func IsAuthorizedByApikey(c *fiber.Ctx) error {
+	auth := c.GetReqHeaders()["Authorization"]
 	if auth != app.Config.ApiKey {
-		return false
+		return fiber.ErrUnauthorized
 	}
-	return true
+	return c.Next()
 }

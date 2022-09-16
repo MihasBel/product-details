@@ -1,10 +1,7 @@
 package details
 
 import (
-	"encoding/json"
-	"fmt"
-	"github.com/MihasBel/product-details/pkg/apikey"
-	"github.com/julienschmidt/httprouter"
+	"github.com/gofiber/fiber/v2"
 	"github.com/rs/zerolog/log"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"net/http"
@@ -16,22 +13,15 @@ import (
 // @Success 200 {array} Details
 // @Router /details/all [get]
 // @Security ApiKeyAuth
-func GetAll(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-	if !apikey.IsAuthorizedByApikey(w, r) {
-		http.Error(w, http.StatusText(401), http.StatusUnauthorized)
-		return
-	}
+func GetAll(c *fiber.Ctx) error {
 	ds, err := AllDetails()
 	if err != nil {
 		log.Error().Err(err).Msg("error while get all details from db")
 	}
-	dsj, err := json.Marshal(ds)
-	if err != nil {
+	if err := c.JSON(ds); err != nil {
 		log.Error().Err(err).Msg("error while marshal all details")
 	}
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	fmt.Fprint(w, string(dsj))
+	return nil
 
 }
 
@@ -42,15 +32,10 @@ func GetAll(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 // @Success 200 {object} Details
 // @Router /details/one/{id} [get]
 // @Security ApiKeyAuth
-func Get(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
-	if !apikey.IsAuthorizedByApikey(w, r) {
-		http.Error(w, http.StatusText(401), http.StatusUnauthorized)
-		return
-	}
-	ids := params.ByName("id")
+func Get(c *fiber.Ctx) error {
+	ids := c.Params("id", "")
 	if !primitive.IsValidObjectID(ids) {
-		http.Error(w, "wrong id format "+ids, http.StatusBadRequest)
-		return
+		return fiber.NewError(http.StatusBadRequest, "wrong id format "+ids)
 	}
 	id, err := primitive.ObjectIDFromHex(ids)
 	if err != nil {
@@ -60,13 +45,10 @@ func Get(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	if err != nil {
 		log.Error().Err(err).Msg("error while getting one details by id")
 	}
-	dj, err := json.Marshal(d)
-	if err != nil {
+	if err := c.JSON(d); err != nil {
 		log.Error().Err(err).Msg("error while marshal one details")
 	}
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	fmt.Fprint(w, string(dj))
+	return nil
 }
 
 // Create godoc
@@ -76,27 +58,19 @@ func Get(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 // @Success 200 {object} Details
 // @Router /details/create [post]
 // @Security ApiKeyAuth
-func Create(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-	if !apikey.IsAuthorizedByApikey(w, r) {
-		http.Error(w, http.StatusText(401), http.StatusUnauthorized)
-		return
-	}
+func Create(c *fiber.Ctx) error {
 	d := Details{}
-	err := json.NewDecoder(r.Body).Decode(&d)
-	if err != nil {
+	if err := c.BodyParser(&d); err != nil {
 		log.Error().Err(err).Msg("error while decode details")
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
+		return fiber.NewError(http.StatusBadRequest, "error while decode request body")
 	}
-	d, err = InsertOne(d)
+
+	d, err := InsertOne(d)
 	if err != nil {
 		log.Error().Err(err).Msg("error while insert one details to db")
 	}
-	dj, err := json.Marshal(d)
-	if err != nil {
+	if err := c.JSON(d); err != nil {
 		log.Error().Err(err).Msg("error while marshal inserted one details")
 	}
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusCreated)
-	fmt.Fprint(w, string(dj))
+	return nil
 }

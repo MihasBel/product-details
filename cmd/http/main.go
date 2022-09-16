@@ -2,8 +2,13 @@ package main
 
 import (
 	"flag"
+
 	"github.com/MihasBel/product-details/internal/app"
+	"github.com/MihasBel/product-details/pkg/apikey"
+	fiber "github.com/gofiber/fiber/v2"
 	"github.com/jinzhu/configor"
+	"github.com/julienschmidt/httprouter"
+	httpSwagger "github.com/swaggo/http-swagger"
 
 	"net/http"
 	"os"
@@ -12,10 +17,10 @@ import (
 	"github.com/MihasBel/product-details/pkg/mongoDb"
 
 	_ "github.com/MihasBel/product-details/api/docs"
-	"github.com/julienschmidt/httprouter"
+
+	"github.com/gofiber/swagger"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
-	httpSwagger "github.com/swaggo/http-swagger"
 )
 
 var logf *os.File
@@ -36,27 +41,32 @@ func init() {
 // @title Details API
 // @version 1.0
 // @description Swagger API service to store and modify the product details description of any goods
+// @BasePath  /api/v1
 
 // @securityDefinitions.apikey ApiKeyAuth
 // @in header
 // @name Authorization
-
 func main() {
 	defer logf.Close()
-	router := httprouter.New()
-	router.GET("/docs/:any", swaggerHandler)
-	router.GET("/", index)
+	app := fiber.New()
+	app.Get("/swagger/*", swagger.HandlerDefault)
+	app.Get("/", index)
 
-	router.GET("/details/all", details.GetAll)
-	router.GET("/details/one/:id", details.Get)
-	router.POST("/details/create", details.Create)
-	if err := http.ListenAndServe(":8080", router); err != nil {
+	api := app.Group("/api")
+
+	v1 := api.Group("/v1", apikey.IsAuthorizedByApikey)
+	v1.Get("/details/all", details.GetAll)
+	v1.Get("/details/one/:id", details.Get)
+	v1.Post("/details/create", details.Create)
+
+	if err := app.Listen(":8080"); err != nil {
 		log.Debug().Err(err).Msg("server status")
 	}
 }
 
-func index(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-	http.Redirect(w, r, "/docs/index.html", http.StatusSeeOther)
+func index(c *fiber.Ctx) error {
+	c.Redirect("/swagger/index.html", http.StatusSeeOther)
+	return nil
 }
 func swaggerHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	httpSwagger.WrapHandler(w, r)
