@@ -58,7 +58,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/details.DetailsWithoutId"
+                            "$ref": "#/definitions/details._withoutId"
                         }
                     }
                 ],
@@ -124,7 +124,7 @@ const docTemplate = `{
                 }
             }
         },
-        "details.DetailsWithoutId": {
+        "details._withoutId": {
             "type": "object",
             "properties": {
                 "group": {
@@ -155,7 +155,7 @@ const docTemplate = `{
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
 	Host:             "",
-	BasePath:         "",
+	BasePath:         "/api/v1",
 	Schemes:          []string{},
 	Title:            "Details API",
 	Description:      "Swagger API service to store and modify the product details description of any goods",

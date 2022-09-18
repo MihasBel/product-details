@@ -1,10 +1,11 @@
 package app
 
-var Config Configuration
+// Config exported variable to contain config values
+var Config configuration
 
-type Configuration struct {
+type configuration struct {
 	ConnectionString string
 	Database         string
 	Collection       string
-	ApiKey           string
+	APIKey           string
 }

@@ -3,18 +3,16 @@ package main
 import (
 	"flag"
 
-	"github.com/MihasBel/product-details/internal/app"
-	"github.com/MihasBel/product-details/pkg/apikey"
-	fiber "github.com/gofiber/fiber/v2"
-	"github.com/jinzhu/configor"
-	"github.com/julienschmidt/httprouter"
-	httpSwagger "github.com/swaggo/http-swagger"
-
 	"net/http"
 	"os"
 
+	"github.com/MihasBel/product-details/internal/app"
+	"github.com/MihasBel/product-details/pkg/apikey"
+	"github.com/gofiber/fiber/v2"
+	"github.com/jinzhu/configor"
+
 	"github.com/MihasBel/product-details/internal/details"
-	"github.com/MihasBel/product-details/pkg/mongoDb"
+	"github.com/MihasBel/product-details/pkg/mongodb"
 
 	_ "github.com/MihasBel/product-details/api/docs"
 
@@ -34,7 +32,7 @@ func init() {
 	if err := configor.New(&configor.Config{ErrorOnUnmatchedKeys: true}).Load(&app.Config, configPath); err != nil {
 		log.Fatal().Err(err).Msg("cannot load config")
 	}
-	mongoDb.InitDatabase()
+	mongodb.InitDatabase()
 	details.InitCollection()
 }
 
@@ -47,7 +45,11 @@ func init() {
 // @in header
 // @name Authorization
 func main() {
-	defer logf.Close()
+	defer func() {
+		if err := logf.Close(); err != nil {
+			log.Error().Err(err).Msg("error while closing log file")
+		}
+	}()
 	app := fiber.New()
 	app.Get("/swagger/*", swagger.HandlerDefault)
 	app.Get("/", index)
@@ -65,11 +67,7 @@ func main() {
 }
 
 func index(c *fiber.Ctx) error {
-	c.Redirect("/swagger/index.html", http.StatusSeeOther)
-	return nil
-}
-func swaggerHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-	httpSwagger.WrapHandler(w, r)
+	return c.Redirect("/swagger/index.html", http.StatusSeeOther)
 }
 func logFile() *os.File {
 	f, err := os.OpenFile("details.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)

@@ -1,10 +1,11 @@
 package details
 
 import (
+	"net/http"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/rs/zerolog/log"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"net/http"
 )
 
 // GetAll godoc
@@ -14,7 +15,7 @@ import (
 // @Router /details/all [get]
 // @Security ApiKeyAuth
 func GetAll(c *fiber.Ctx) error {
-	ds, err := AllDetails()
+	ds, err := allDetails()
 	if err != nil {
 		log.Error().Err(err).Msg("error while get all details from db")
 	}
@@ -41,7 +42,7 @@ func Get(c *fiber.Ctx) error {
 	if err != nil {
 		log.Error().Err(err).Msg("error while reading details id")
 	}
-	d, err := GetById(id)
+	d, err := getByID(id)
 	if err != nil {
 		log.Error().Err(err).Msg("error while getting one details by id")
 	}
@@ -54,7 +55,7 @@ func Get(c *fiber.Ctx) error {
 // Create godoc
 // @Summary Creates a new product-details from the received json document
 // @Accept json
-// @Param request body _withoutId true "product-details schema"
+// @Param request body _withoutID true "product-details schema"
 // @Success 200 {object} Details
 // @Router /details/create [post]
 // @Security ApiKeyAuth
@@ -65,7 +66,7 @@ func Create(c *fiber.Ctx) error {
 		return fiber.NewError(http.StatusBadRequest, "error while decode request body")
 	}
 
-	d, err := InsertOne(d)
+	d, err := insertOne(d)
 	if err != nil {
 		log.Error().Err(err).Msg("error while insert one details to db")
 	}
