@@ -6,7 +6,7 @@ mod:
 build:
 	go build \
 			--trimpath \
-			-o bin/app \
+			-o bin/app/product-details \
 			cmd/http/main.go
 
 .PHONY: check
@@ -27,7 +27,7 @@ cover:
 
 .PHONY: run
 run: build
-	./bin/app --config=configs/local/config.yaml
+	./bin/app --config=configs/local-env/env.json
 
 .PHONY: runlocal
 runlocal:

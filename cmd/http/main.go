@@ -2,13 +2,10 @@ package main
 
 import (
 	"flag"
-
-	"net/http"
+	"github.com/MihasBel/product-details/delivery/rest"
 	"os"
 
 	"github.com/MihasBel/product-details/internal/app"
-	"github.com/MihasBel/product-details/pkg/apikey"
-	"github.com/gofiber/fiber/v2"
 	"github.com/jinzhu/configor"
 
 	"github.com/MihasBel/product-details/internal/details"
@@ -16,7 +13,6 @@ import (
 
 	_ "github.com/MihasBel/product-details/api/docs"
 
-	"github.com/gofiber/swagger"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 )
@@ -33,7 +29,6 @@ func init() {
 		log.Fatal().Err(err).Msg("cannot load config")
 	}
 	mongodb.InitDatabase()
-	details.InitCollection()
 }
 
 // @title Details API
@@ -50,25 +45,11 @@ func main() {
 			log.Error().Err(err).Msg("error while closing log file")
 		}
 	}()
-	app := fiber.New()
-	app.Get("/swagger/*", swagger.HandlerDefault)
-	app.Get("/", index)
-
-	api := app.Group("/api")
-
-	v1 := api.Group("/v1", apikey.IsAuthorizedByApikey)
-	v1.Get("/details/all", details.GetAll)
-	v1.Get("/details/one/:id", details.Get)
-	v1.Post("/details/create", details.Create)
-
-	if err := app.Listen(":8080"); err != nil {
-		log.Debug().Err(err).Msg("server status")
-	}
+	detailer := details.New(mongodb.DB.Collection(app.Config.Collection))
+	app := rest.New(app.Config, detailer)
+	app.Start()
 }
 
-func index(c *fiber.Ctx) error {
-	return c.Redirect("/swagger/index.html", http.StatusSeeOther)
-}
 func logFile() *os.File {
 	f, err := os.OpenFile("details.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	if err != nil {

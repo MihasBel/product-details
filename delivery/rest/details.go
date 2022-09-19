@@ -1,21 +1,21 @@
-package details
+package rest
 
 import (
-	"net/http"
-
+	"github.com/MihasBel/product-details/model"
 	"github.com/gofiber/fiber/v2"
 	"github.com/rs/zerolog/log"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"net/http"
 )
 
-// GetAll godoc
+// getAll godoc
 // @Summary Retrieves all product details
 // @Produce json
 // @Success 200 {array} Details
 // @Router /details/all [get]
 // @Security ApiKeyAuth
-func GetAll(c *fiber.Ctx) error {
-	ds, err := allDetails()
+func (r *REST) getAll(c *fiber.Ctx) error {
+	ds, err := r.d.All()
 	if err != nil {
 		log.Error().Err(err).Msg("error while get all details from db")
 	}
@@ -33,16 +33,12 @@ func GetAll(c *fiber.Ctx) error {
 // @Success 200 {object} Details
 // @Router /details/one/{id} [get]
 // @Security ApiKeyAuth
-func Get(c *fiber.Ctx) error {
+func (r *REST) getByID(c *fiber.Ctx) error {
 	ids := c.Params("id", "")
 	if !primitive.IsValidObjectID(ids) {
 		return fiber.NewError(http.StatusBadRequest, "wrong id format "+ids)
 	}
-	id, err := primitive.ObjectIDFromHex(ids)
-	if err != nil {
-		log.Error().Err(err).Msg("error while reading details id")
-	}
-	d, err := getByID(id)
+	d, err := r.d.ByID(ids)
 	if err != nil {
 		log.Error().Err(err).Msg("error while getting one details by id")
 	}
@@ -55,18 +51,17 @@ func Get(c *fiber.Ctx) error {
 // Create godoc
 // @Summary Creates a new product-details from the received json document
 // @Accept json
-// @Param request body _withoutID true "product-details schema"
+// @Param request body model.Detail true "product-details schema"
 // @Success 200 {object} Details
 // @Router /details/create [post]
 // @Security ApiKeyAuth
-func Create(c *fiber.Ctx) error {
-	d := Details{}
+func (r *REST) create(c *fiber.Ctx) error {
+	d := model.Detail{}
 	if err := c.BodyParser(&d); err != nil {
 		log.Error().Err(err).Msg("error while decode details")
 		return fiber.NewError(http.StatusBadRequest, "error while decode request body")
 	}
-
-	d, err := insertOne(d)
+	d, err := r.d.InsertOne(d)
 	if err != nil {
 		log.Error().Err(err).Msg("error while insert one details to db")
 	}
