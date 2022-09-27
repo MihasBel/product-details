@@ -18,6 +18,7 @@ import (
 )
 
 var logf *os.File
+
 var configPath string
 
 func init() {
