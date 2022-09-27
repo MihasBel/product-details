@@ -20,7 +20,6 @@ func New(c *mongo.Collection) *MongoDetail {
 }
 
 func (m MongoDetail) All() ([]model.Detail, error) {
-	var details []model.Detail
 	cur, err := m.collection.Find(context.Background(), bson.D{})
 	if err != nil {
 		return nil, err
@@ -30,6 +29,7 @@ func (m MongoDetail) All() ([]model.Detail, error) {
 			log.Error().Err(err).Msg("error while connecting to details collection")
 		}
 	}()
+	details := make([]model.Detail, 0, cur.RemainingBatchLength())
 	for cur.Next(context.Background()) {
 		d := model.Detail{}
 		err = cur.Decode(&d)
