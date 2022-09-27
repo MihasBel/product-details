@@ -30,14 +30,7 @@ func (m MongoDetail) All() ([]model.Detail, error) {
 		}
 	}()
 	details := make([]model.Detail, 0, cur.RemainingBatchLength())
-	for cur.Next(context.Background()) {
-		d := model.Detail{}
-		err = cur.Decode(&d)
-		if err != nil {
-			return nil, err
-		}
-		details = append(details, d)
-	}
+	cur.All(context.Background(), &details)
 	if err = cur.Err(); err != nil {
 		return nil, err
 	}
