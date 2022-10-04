@@ -1,11 +1,12 @@
 package rest
 
 import (
+	"net/http"
+
 	"github.com/MihasBel/product-details/model"
 	"github.com/gofiber/fiber/v2"
 	"github.com/rs/zerolog/log"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"net/http"
 )
 
 // getAll godoc

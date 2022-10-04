@@ -1,10 +1,11 @@
 package rest
 
 import (
+	"testing"
+
 	"github.com/MihasBel/product-details/internal/app"
 	"github.com/MihasBel/product-details/mocks"
 	"github.com/MihasBel/product-details/model"
-	"testing"
 )
 
 var conf app.Configuration = app.Configuration{

@@ -1,8 +1,9 @@
 package rest
 
 import (
-	"github.com/gofiber/fiber/v2"
 	"net/http"
+
+	"github.com/gofiber/fiber/v2"
 )
 
 func (r *REST) index(c *fiber.Ctx) error {

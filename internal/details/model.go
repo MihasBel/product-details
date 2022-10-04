@@ -2,6 +2,7 @@ package details
 
 import (
 	"context"
+
 	"github.com/MihasBel/product-details/model"
 
 	"github.com/rs/zerolog/log"
@@ -11,14 +12,17 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
+// MongoDetail implement detailer interface to work with mongoDB
 type MongoDetail struct {
 	collection *mongo.Collection
 }
 
+// New create new instance of MongoDetail with mongo collection
 func New(c *mongo.Collection) *MongoDetail {
 	return &MongoDetail{collection: c}
 }
 
+// All fake for test get all documents from DB
 func (m MongoDetail) All() ([]model.Detail, error) {
 	cur, err := m.collection.Find(context.Background(), bson.D{})
 	if err != nil {
@@ -30,13 +34,14 @@ func (m MongoDetail) All() ([]model.Detail, error) {
 		}
 	}()
 	details := make([]model.Detail, 0, cur.RemainingBatchLength())
-	cur.All(context.Background(), &details)
-	if err = cur.Err(); err != nil {
+
+	if err = cur.All(context.Background(), &details); err != nil {
 		return nil, err
 	}
 	return details, nil
 }
 
+// ByID get one detail by id from DB
 func (m MongoDetail) ByID(id string) (model.Detail, error) {
 	d := model.Detail{}
 	idObj, err := primitive.ObjectIDFromHex(id)
@@ -51,6 +56,7 @@ func (m MongoDetail) ByID(id string) (model.Detail, error) {
 	return d, nil
 }
 
+// InsertOne insert one new detail to DB. Should generate new object id
 func (m MongoDetail) InsertOne(d model.Detail) (model.Detail, error) {
 	dDB := details{
 		ID:          primitive.NewObjectID(),

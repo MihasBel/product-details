@@ -2,21 +2,24 @@ package rest
 
 import (
 	"context"
+	"net/http"
+	"time"
+
 	"github.com/MihasBel/product-details/internal/app"
 	"github.com/MihasBel/product-details/internal/rep"
 	"github.com/gofiber/fiber/v2"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
-	"net/http"
-	"time"
 )
 
+// REST represent REST-full application
 type REST struct {
 	app *fiber.App
 	cfg app.Configuration
 	d   rep.Detailer
 }
 
+// New Create new instance of REST. Should use only in main.
 func New(config app.Configuration, d rep.Detailer) *REST {
 	app := fiber.New()
 	rest := REST{
@@ -28,6 +31,8 @@ func New(config app.Configuration, d rep.Detailer) *REST {
 
 	return &rest
 }
+
+// Start an application
 func (r *REST) Start(ctx context.Context) error {
 	errCh := make(chan error)
 	log.Debug().Msgf("start listening %q", r.cfg.Address)
@@ -44,6 +49,8 @@ func (r *REST) Start(ctx context.Context) error {
 		return nil
 	}
 }
+
+// Stop an application
 func (r *REST) Stop(ctx context.Context) error {
 	errCh := make(chan error)
 	log.Debug().Msgf("stopping %q", r.cfg.Address)

@@ -3,11 +3,12 @@ package main
 import (
 	"context"
 	"flag"
-	"github.com/MihasBel/product-details/delivery/rest"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
+
+	"github.com/MihasBel/product-details/delivery/rest"
 
 	"github.com/MihasBel/product-details/internal/app"
 	"github.com/jinzhu/configor"
