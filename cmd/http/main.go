@@ -1,9 +1,13 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"github.com/MihasBel/product-details/delivery/rest"
 	"os"
+	"os/signal"
+	"syscall"
+	"time"
 
 	"github.com/MihasBel/product-details/internal/app"
 	"github.com/jinzhu/configor"
@@ -46,9 +50,30 @@ func main() {
 			log.Error().Err(err).Msg("error while closing log file")
 		}
 	}()
-	detailer := details.New(mongodb.DB.Collection(app.Config.Collection))
-	app := rest.New(app.Config, detailer)
-	app.Start()
+	cfg := app.Config
+	detailer := details.New(mongodb.DB.Collection(cfg.Collection))
+	app := rest.New(cfg, detailer)
+
+	startCtx, startCancel := context.WithTimeout(context.Background(), time.Duration(cfg.StartTimeout)*time.Second)
+	defer startCancel()
+	if err := app.Start(startCtx); err != nil {
+		log.Fatal().Err(err).Msg("cannot start application") // nolint
+	}
+
+	log.Info().Msg("application started")
+
+	quitCh := make(chan os.Signal, 1)
+	signal.Notify(quitCh, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
+	<-quitCh
+
+	stopCtx, stopCancel := context.WithTimeout(context.Background(), time.Duration(cfg.StartTimeout)*time.Second)
+	defer stopCancel()
+
+	if err := app.Stop(stopCtx); err != nil {
+		log.Error().Err(err).Msg("cannot stop application")
+	}
+
+	log.Info().Msg("service is down")
 }
 
 func logFile() *os.File {
