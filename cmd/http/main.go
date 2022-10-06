@@ -27,7 +27,7 @@ var logf *os.File
 var configPath string
 
 func init() {
-	log.Logger = log.Output(zerolog.ConsoleWriter{Out: logFile()})
+	log.Logger = log.Output(zerolog.New(logFile()))
 	flag.StringVar(&configPath, "config", "env.json", "Config file path")
 	flag.Parse()
 
