@@ -14,9 +14,9 @@ import (
 // DB provides access to the database
 var DB *mongo.Database
 
-// InitDatabase initializes the connection to the database using the config
-func InitDatabase() {
-	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
+// Start initializes the connection to the database using the config
+func Start() {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI(app.Config.ConnectionString))
 	if err != nil {
@@ -28,4 +28,9 @@ func InitDatabase() {
 	}
 	DB = client.Database(app.Config.Database)
 
+}
+func Stop(ctx context.Context) {
+	if err := DB.Client().Disconnect(ctx); err != nil {
+		log.Error().Err(err).Msg("cannot close connection")
+	}
 }
