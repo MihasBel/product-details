@@ -10,8 +10,9 @@ func (r *REST) setURLs() {
 
 	api := r.app.Group("/api")
 
-	v1 := api.Group("/v1", r.isAuthorizedByApikey)
-	v1.Get("/details/all", r.getAll)
-	v1.Get("/details/one/:id", r.getByID)
-	v1.Post("/details/create", r.create)
+	v1 := api.Group("/v1", r.isAuth) //TODO rename
+	details := v1.Group("/details")
+	details.Get("/all", r.getAll)
+	details.Get("/one/:id", r.getByID)
+	details.Post("/create", r.create) //TODO rename urls
 }

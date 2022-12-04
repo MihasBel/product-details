@@ -21,9 +21,9 @@ type REST struct {
 
 // New Create new instance of REST. Should use only in main.
 func New(config app.Configuration, d rep.Detailer) *REST {
-	app := fiber.New()
+	a := fiber.New() //TODO add timeout
 	rest := REST{
-		app: app,
+		app: a,
 		cfg: config,
 		d:   d,
 	}
@@ -33,7 +33,7 @@ func New(config app.Configuration, d rep.Detailer) *REST {
 }
 
 // Start an application
-func (r *REST) Start(ctx context.Context) error {
+func (r *REST) Start(_ context.Context) error {
 	errCh := make(chan error)
 	log.Debug().Msgf("start listening %q", r.cfg.Address)
 	go func() {
@@ -51,7 +51,7 @@ func (r *REST) Start(ctx context.Context) error {
 }
 
 // Stop an application
-func (r *REST) Stop(ctx context.Context) error {
+func (r *REST) Stop(_ context.Context) error {
 	errCh := make(chan error)
 	log.Debug().Msgf("stopping %q", r.cfg.Address)
 	go func() {

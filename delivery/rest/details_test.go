@@ -18,18 +18,18 @@ var det = mocks.FakeDetailer{}
 
 var testREST *REST = New(conf, det)
 
-var normalDetails []model.Detail = []model.Detail{
-	model.Detail{
+var normalDetails = []model.Detail{
+	{
 		ID:          "123",
 		ProductName: "",
 		Group:       nil,
 	},
-	model.Detail{
+	{
 		ID:          "321",
 		ProductName: "",
 		Group:       nil,
 	},
-	model.Detail{
+	{
 		ID:          "1010",
 		ProductName: "",
 		Group:       nil,
@@ -38,7 +38,7 @@ var normalDetails []model.Detail = []model.Detail{
 
 func TestAll_NormalValue(t *testing.T) {
 	want := normalDetails
-	got, err := testREST.d.All()
+	got, err := testREST.d.All(nil)
 	if err != nil {
 		t.Errorf("got error while execute ALL()")
 		return

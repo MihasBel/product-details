@@ -1,10 +1,13 @@
 package rep
 
-import "github.com/MihasBel/product-details/model"
+import (
+	"context"
+	"github.com/MihasBel/product-details/model"
+)
 
 // Detailer interface to work with details DB
 type Detailer interface {
-	All() ([]model.Detail, error)
-	ByID(id string) (model.Detail, error)
-	InsertOne(d model.Detail) (model.Detail, error)
+	All(ctx context.Context) ([]model.Detail, error)
+	ByID(ctx context.Context, id string) (model.Detail, error)
+	InsertOne(ctx context.Context, d model.Detail) (model.Detail, error)
 }
