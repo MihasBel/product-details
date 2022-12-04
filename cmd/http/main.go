@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"flag"
+	"github.com/MihasBel/product-details/pkg/logger"
 	"os"
 	"os/signal"
 	"syscall"
@@ -19,7 +20,6 @@ import (
 
 	_ "github.com/MihasBel/product-details/api/docs"
 
-	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 )
 
@@ -28,13 +28,13 @@ var logf *os.File
 var configPath string
 
 func init() {
-	log.Logger = log.Output(zerolog.New(logFile()))
 	flag.StringVar(&configPath, "config", "configs/local/env.json", "Config file path")
 	flag.Parse()
 
 	if err := configor.New(&configor.Config{ErrorOnUnmatchedKeys: true}).Load(&app.Config, configPath); err != nil {
 		log.Fatal().Err(err).Msg("cannot load config")
 	}
+	log.Logger = logger.New(app.Config)
 	mongodb.Start()
 }
 
@@ -76,12 +76,4 @@ func main() {
 	}
 	mongodb.Stop(stopCtx)
 	log.Info().Msg("service is down")
-}
-
-func logFile() *os.File {
-	f, err := os.OpenFile("details.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
-	if err != nil {
-		log.Fatal().Err(err).Msg("error while opening log file")
-	}
-	return f
 }
