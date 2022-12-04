@@ -1,6 +1,7 @@
+
 .PHONY: mod
 mod:
-	go mod tidy
+	go mod download
 
 .PHONY: build
 build:
@@ -26,8 +27,8 @@ cover:
 	./scripts/coverage.sh html
 
 .PHONY: run
-run: build
-	go run cmd/http/main.go --config=configs/local-env/env.json
+run:
+	go run cmd/http/main.go --config=configs/local/env.json
 
 .PHONY: swag
 swag:

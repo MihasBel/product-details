@@ -28,13 +28,13 @@ var configPath string
 
 func init() {
 	log.Logger = log.Output(zerolog.New(logFile()))
-	flag.StringVar(&configPath, "config", "env.json", "Config file path")
+	flag.StringVar(&configPath, "config", "configs/local/env.json", "Config file path")
 	flag.Parse()
 
 	if err := configor.New(&configor.Config{ErrorOnUnmatchedKeys: true}).Load(&app.Config, configPath); err != nil {
 		log.Fatal().Err(err).Msg("cannot load config")
 	}
-	mongodb.InitDatabase()
+	mongodb.Start()
 }
 
 // @title Details API
@@ -53,11 +53,11 @@ func main() {
 	}()
 	cfg := app.Config
 	detailer := details.New(mongodb.DB.Collection(cfg.Collection))
-	app := rest.New(cfg, detailer)
+	application := rest.New(cfg, detailer)
 
 	startCtx, startCancel := context.WithTimeout(context.Background(), time.Duration(cfg.StartTimeout)*time.Second)
 	defer startCancel()
-	if err := app.Start(startCtx); err != nil {
+	if err := application.Start(startCtx); err != nil {
 		log.Fatal().Err(err).Msg("cannot start application") // nolint
 	}
 
@@ -70,10 +70,10 @@ func main() {
 	stopCtx, stopCancel := context.WithTimeout(context.Background(), time.Duration(cfg.StartTimeout)*time.Second)
 	defer stopCancel()
 
-	if err := app.Stop(stopCtx); err != nil {
+	if err := application.Stop(stopCtx); err != nil {
 		log.Error().Err(err).Msg("cannot stop application")
 	}
-
+	mongodb.Stop(stopCtx)
 	log.Info().Msg("service is down")
 }
 

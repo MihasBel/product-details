@@ -20,7 +20,7 @@ WORKDIR /
 
 
 COPY --from=builder /build/bin/app/product-details ./product-details
-COPY configs/local-docker-env/env.json ./
+COPY configs/local-docker/env.json ./
 
 EXPOSE 8080
 
