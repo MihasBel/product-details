@@ -2,6 +2,7 @@ package details
 
 import (
 	"context"
+
 	"github.com/MihasBel/product-details/model"
 	"github.com/rs/zerolog/log"
 	"go.mongodb.org/mongo-driver/bson"

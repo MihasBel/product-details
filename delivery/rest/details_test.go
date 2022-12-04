@@ -1,6 +1,7 @@
 package rest
 
 import (
+	"context"
 	"testing"
 
 	"github.com/MihasBel/product-details/internal/app"
@@ -38,7 +39,7 @@ var normalDetails = []model.Detail{
 
 func TestAll_NormalValue(t *testing.T) {
 	want := normalDetails
-	got, err := testREST.d.All(nil)
+	got, err := testREST.d.All(context.Background())
 	if err != nil {
 		t.Errorf("got error while execute ALL()")
 		return

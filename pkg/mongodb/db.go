@@ -29,6 +29,8 @@ func Start() {
 	DB = client.Database(app.Config.Database)
 
 }
+
+// Stop closes the connection to the database
 func Stop(ctx context.Context) {
 	if err := DB.Client().Disconnect(ctx); err != nil {
 		log.Error().Err(err).Msg("cannot close connection")

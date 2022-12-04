@@ -2,6 +2,7 @@ package mocks
 
 import (
 	"context"
+
 	"github.com/MihasBel/product-details/model"
 )
 
