@@ -66,7 +66,7 @@ func (r *REST) create(c *fiber.Ctx) error {
 		log.Error().Err(err).Msg("error while decode details")
 		return fiber.NewError(http.StatusBadRequest, "error while decode request body")
 	}
-	d, err := r.d.InsertOne(c.Context(), d) //TODO pointer
+	d, err := r.d.InsertOne(c.Context(), d) //TODO pointer?
 	if err != nil {
 		log.Error().Err(err).Msg("error while insert one details to db")
 		return err

@@ -1,4 +1,4 @@
-package details
+package mgdetailer
 
 import (
 	"context"
@@ -10,7 +10,7 @@ import (
 )
 
 // All fake for test get all documents from DB
-func (m MongoDetail) All(ctx context.Context) ([]model.Detail, error) {
+func (m MongoDetailer) All(ctx context.Context) ([]model.Detail, error) {
 	cur, err := m.collection.Find(ctx, bson.D{})
 	if err != nil {
 		return nil, err
@@ -29,7 +29,7 @@ func (m MongoDetail) All(ctx context.Context) ([]model.Detail, error) {
 }
 
 // ByID get one detail by id from DB
-func (m MongoDetail) ByID(ctx context.Context, id string) (model.Detail, error) {
+func (m MongoDetailer) ByID(ctx context.Context, id string) (model.Detail, error) {
 	d := model.Detail{}
 	idObj, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
@@ -43,7 +43,7 @@ func (m MongoDetail) ByID(ctx context.Context, id string) (model.Detail, error) 
 }
 
 // InsertOne insert one new detail to DB. Should generate new object id
-func (m MongoDetail) InsertOne(ctx context.Context, d model.Detail) (model.Detail, error) {
+func (m MongoDetailer) InsertOne(ctx context.Context, d model.Detail) (model.Detail, error) {
 	dDB := details{
 		ID:          primitive.NewObjectID(),
 		ProductName: d.ProductName,

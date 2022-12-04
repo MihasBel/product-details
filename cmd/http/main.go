@@ -8,12 +8,13 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/MihasBel/product-details/internal/mgdetailer"
+
 	"github.com/MihasBel/product-details/delivery/rest"
 
 	"github.com/MihasBel/product-details/internal/app"
 	"github.com/jinzhu/configor"
 
-	"github.com/MihasBel/product-details/internal/details"
 	"github.com/MihasBel/product-details/pkg/mongodb"
 
 	_ "github.com/MihasBel/product-details/api/docs"
@@ -52,7 +53,7 @@ func main() {
 		}
 	}()
 	cfg := app.Config
-	detailer := details.New(mongodb.DB.Collection(cfg.Collection))
+	detailer := mgdetailer.New(mongodb.DB.Collection(cfg.Collection))
 	application := rest.New(cfg, detailer)
 
 	startCtx, startCancel := context.WithTimeout(context.Background(), time.Duration(cfg.StartTimeout)*time.Second)
