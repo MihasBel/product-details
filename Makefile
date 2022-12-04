@@ -27,10 +27,6 @@ cover:
 
 .PHONY: run
 run: build
-	./bin/app --config=configs/local-env/env.json
-
-.PHONY: runlocal
-runlocal:
 	go run cmd/http/main.go --config=configs/local-env/env.json
 
 .PHONY: swag
