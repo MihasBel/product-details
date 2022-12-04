@@ -19,11 +19,13 @@ func (r *REST) getAll(c *fiber.Ctx) error {
 	ds, err := r.d.All(c.Context())
 	if err != nil {
 		log.Error().Err(err).Msg("error while get all details from db")
+		return err
 	}
 	if err := c.JSON(ds); err != nil {
 		log.Error().Err(err).Msg("error while marshal all details")
+		return err
 	}
-	return nil //TODO return err
+	return nil
 
 }
 
@@ -42,9 +44,11 @@ func (r *REST) getByID(c *fiber.Ctx) error {
 	d, err := r.d.ByID(c.Context(), ids)
 	if err != nil {
 		log.Error().Err(err).Msg("error while getting one details by id")
+		return err
 	}
 	if err := c.JSON(d); err != nil {
 		log.Error().Err(err).Msg("error while marshal one details")
+		return err
 	}
 	return nil
 }
@@ -65,9 +69,11 @@ func (r *REST) create(c *fiber.Ctx) error {
 	d, err := r.d.InsertOne(c.Context(), d) //TODO pointer
 	if err != nil {
 		log.Error().Err(err).Msg("error while insert one details to db")
+		return err
 	}
 	if err := c.JSON(d); err != nil {
 		log.Error().Err(err).Msg("error while marshal inserted one details")
+		return err
 	}
 	return nil
 }
