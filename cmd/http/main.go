@@ -3,11 +3,12 @@ package main
 import (
 	"context"
 	"flag"
-	"github.com/MihasBel/product-details/pkg/logger"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
+
+	"github.com/MihasBel/product-details/pkg/logger"
 
 	"github.com/MihasBel/product-details/internal/mgdetailer"
 

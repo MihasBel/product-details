@@ -1,15 +1,22 @@
 package logger
 
 import (
+	"io"
+	"os"
+	"path"
+	"runtime/debug"
+
 	"github.com/MihasBel/product-details/internal/app"
 	"github.com/natefinch/lumberjack"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
-	"io"
-	"os"
-	"path"
 )
 
+func errorStackMarshaller(_ error) interface{} {
+	return string(debug.Stack())
+}
+
+// New creates a new instance for logger based on configuration
 func New(cfg app.Configuration) zerolog.Logger {
 	var writers []io.Writer
 
@@ -23,7 +30,7 @@ func New(cfg app.Configuration) zerolog.Logger {
 	}
 
 	mw := io.MultiWriter(writers...)
-
+	zerolog.ErrorStackMarshaler = errorStackMarshaller
 	l := zerolog.New(mw).With().Timestamp().Logger()
 
 	l.Info().Msg("logging configured")
